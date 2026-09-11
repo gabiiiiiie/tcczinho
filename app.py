@@ -126,9 +126,33 @@ def cadastrar_usuarios():
                 "Erro ao cadastrar usuário (Nome de usuário já pode existir).",
                 "erro",
             )
-            return redirect(url_for("cadastrar_usuarios"))
 
-    return render_template("cadastrar_usuarios.html")
+               # =====================================================
+    # BUSCAR USUÁRIOS DO MYSQL
+    # =====================================================
+
+    cursor.execute("""
+        SELECT id, username, role
+        FROM usuarios
+        ORDER BY id ASC
+    """)
+
+    usuarios = cursor.fetchall()
+
+
+    cursor.close()
+    conexao.close()
+
+
+    # =====================================================
+    # ENVIA OS USUÁRIOS PARA O HTML
+    # =====================================================
+
+    return render_template(
+        'cadastrar_usuarios.html',
+        usuarios=usuarios
+    )
+   
 
 # ROTA QUE MOSTRA OS ITENS DO ESTOQUE (Unificada e Protegida)
 @app.route('/banco', methods=['GET'])

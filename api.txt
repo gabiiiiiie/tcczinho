@@ -1,0 +1,39 @@
+rota login 
+método Post 
+http://127.0.0.1:5001/api/login
+
+body
+
+{
+    "username": "admin",
+    "password": "1234"
+
+}
+ rota ok codigo 200
+
+
+ --------------------------------------------------------
+
+rota itens
+método get
+http://127.0.0.1:5001/api/itens
+
+codigo 200
+
+--------------------------------------------------------
+
+rota itens (2)
+metodo post
+http://127.0.0.1:5001/api/itens
+
+
+body
+{
+    "nome": "Prego",
+    "quantidade": 10,
+    "estoque": 3,
+    "descricao": "Prego 11x12",
+    "preco": 15.90,
+    "categoria": "Mecânica",
+    "foto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpjkwDqzP3VKUBJUdVzeZvablEaW2vQMrUhU2PoKx7jw&s=10"
+}

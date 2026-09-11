@@ -198,9 +198,95 @@
 
                 </div>
 
-            </form>
+                </form>
 
-        </div>
+
+<!-- =================================================
+     LISTA DE USUÁRIOS EXISTENTES
+     ================================================= -->
+
+<div class="usuarios-existentes">
+
+    <div class="titulo-usuarios">
+        Usuários cadastrados
+    </div>
+
+
+    {% if usuarios %}
+
+    <div class="tabela-usuarios-container">
+
+        <table class="tabela-usuarios">
+
+            <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Usuário</th>
+                    <th>Permissão</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for usuario in usuarios %}
+
+                <tr>
+
+                    <td>
+                        {{ usuario.id }}
+                    </td>
+
+                    <td>
+                        {{ usuario.username }}
+                    </td>
+
+                    <td>
+
+                        {% if usuario.role == 'admin' %}
+
+                            <span class="permissao-admin">
+                                Administrador
+                            </span>
+
+                        {% else %}
+
+                            <span class="permissao-user">
+                                Usuário
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+        <p class="sem-usuarios">
+            Nenhum usuário cadastrado.
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+</div>
+
+</main>
+
+            </form>
 
     </main>
 

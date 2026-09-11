@@ -93,7 +93,7 @@ function erroImagem() {
 
         <div class="container-fluid">
 
-            <img src="{{ url_for('static', filename='imagemitens/senailogo.png') }}"
+            <img src="{{ url_for('static', filename='imagens/senailogo.png') }}"
                  id="imgnavbar">
 
 
@@ -202,66 +202,133 @@ function erroImagem() {
         <h2>Cadastrar Novo Item</h2>
         
        
-        <form action="/salvaritem" method="POST">
-            <div id="form-grupo">
-                <label>Nome do Item:</label>
-                <input type="text" name="nome" required>
-            </div>
-            <div class="form-grupo">
-                <label>Quantidade:</label>
-                <input type="number" name="quantidade" required>
-            </div>
-            <div class="form-grupo">
-                <label>Estoque Mínimo:</label>
-                <input type="number" name="estoque" required>
-            </div>
-            <div class="form-grupo">
-                <label>Descrição:</label>
-                <textarea name="descricao" rows="3" required></textarea>
-            </div>
-            <div class="form-grupo">
-                <label>Preco:</label>
-                <input type="number" step="0.01" name="preco" required>
-            </div>
-            <div class="form-grupo">
-                <label>Categoria:</label>
-                <select id="seleçaouseradmin" name="role" required>
-                <option value="" selected disabled>Selecione</option>
-                <option value="admin">Elétrica</option>
-                <option value="user">Mecânica</option>
-                <option value="user">Geral</option>
-            </select>
-            <div class="form-grupo">
-                <br>
-    <label>Link da imagem :</label>
+   <form action="/salvaritem" method="POST">
 
-    <input 
-        type="url" 
-        id="foto"
-        name="foto" 
-        placeholder="https://imagem.com/imagem.jpg"
-        required
-    >
+    <div class="form-grupo">
+        <label>Nome do Item:</label>
+        <input
+            type="text"
+            name="nome"
+            required
+            minlength="2"
+        >
+    </div>
 
-    <button 
-        type="button" 
-        onclick="visualizarFoto()"
-        style="
-            margin-top: 8px;
-            background-color: #007acc;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-        "
-    >
-        Visualizar imagem
-    </button>
-</div>
-                <div class="botoes-cadastro">
-    <button type="submit" class="btn-salvar">Salvar Item</button>
-    <a href="/banco" class="btn-cancelar">Cancelar</a>
-</div>
+    <div class="form-grupo">
+        <label>Quantidade:</label>
+        <input
+            type="number"
+            name="quantidade"
+            min="0"
+            required
+        >
+    </div>
+
+    <div class="form-grupo">
+        <label>Estoque Mínimo:</label>
+        <input
+            type="number"
+            name="estoque"
+            min="0"
+            required
+        >
+    </div>
+
+    <div class="form-grupo">
+        <label>Descrição:</label>
+        <textarea
+            name="descricao"
+            rows="3"
+            required
+            minlength="3"
+        ></textarea>
+    </div>
+
+    <div class="form-grupo">
+        <label>Preço:</label>
+        <input
+            type="number"
+            step="0.01"
+            name="preco"
+            min="0"
+            required
+        >
+    </div>
+
+    <div class="form-grupo">
+        <label>Categoria:</label>
+
+        <select
+            id="categoria"
+            name="categoria"
+            required
+        >
+            <option value="" selected disabled>
+                Selecione uma categoria
+            </option>
+
+            <option value="Elétrica">
+                Elétrica
+            </option>
+
+            <option value="Mecânica">
+                Mecânica
+            </option>
+
+            <option value="Geral">
+                Geral
+            </option>
+        </select>
+    </div>
+
+    <div class="form-grupo">
+        <label>Link da imagem:</label>
+
+        <input
+            type="url"
+            id="foto"
+            name="foto"
+            placeholder="https://imagem.com/imagem.jpg"
+            required
+        >
+
+        <button
+            type="button"
+            onclick="visualizarFoto()"
+            style="
+                margin-top: 8px;
+                background-color: #007acc;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 6px;
+                cursor: pointer;
+            "
+        >
+            Visualizar imagem
+        </button>
+    </div>
+
+    <div class="botoes-cadastro">
+
+        <button
+            type="submit"
+            class="btn-salvar"
+        >
+            Salvar Item
+        </button>
+
+        <a
+            href="/banco"
+            class="btn-cancelar"
+        >
+            Cancelar
+        </a>
+
+    
+    </div>
+
+</form>
+
 </body>
 </html>
