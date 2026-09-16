@@ -1112,3 +1112,9 @@ body.pagina-usuarios .sem-usuarios {
     text-align: center;
 
 }
+
+.tabela-usuarios-container {
+    max-height: 300px;    /* Define a altura máxima antes de começar a rolar */
+    overflow-y: auto;     /* Adiciona a barra de rolagem vertical apenas se precisar */
+    border: 1px solid #ddd; /* Opcional: bordinha fina para delimitar a área de scroll */
+}

@@ -95,10 +95,13 @@ def cadastrar_usuarios():
         )
         return redirect(url_for("index"))
 
+    # =====================================================
+    # PROCESSA O CADASTRO (QUANDO FOR POST)
+    # =====================================================
     if request.method == "POST":
         novo_username = request.form.get("username")
         nova_senha = request.form.get("password")
-        nova_role = request.form.get("role")  # Captura a escolha do HTML (user ou admin)
+        nova_role = request.form.get("role")  # Captura a escolha do HTML
 
         # CRIPTOGRAFIA: Transforma a senha em uma hash segura
         senha_criptografada = generate_password_hash(nova_senha)
@@ -107,7 +110,6 @@ def cadastrar_usuarios():
             conexao = obter_conexao()
             cursor = conexao.cursor()
 
-            # Passa a variável dinâmica no terceiro argumento da tupla
             cursor.execute(
                 "INSERT INTO usuarios (username, password, role) VALUES (%s, %s, %s)",
                 (novo_username, senha_criptografada, nova_role),
@@ -126,32 +128,40 @@ def cadastrar_usuarios():
                 "Erro ao cadastrar usuário (Nome de usuário já pode existir).",
                 "erro",
             )
+            # Garante o fechamento mesmo em caso de erro no POST antes de continuar
+            if 'cursor' in locals() and cursor: cursor.close()
+            if 'conexao' in locals() and conexao: conexao.close()
 
-               # =====================================================
-    # BUSCAR USUÁRIOS DO MYSQL
     # =====================================================
+    # BUSCAR USUÁRIOS DO MYSQL (EXECUTA SEMPRE NO GET)
+    # =====================================================
+    try:
+        conexao = obter_conexao()
+        cursor = conexao.cursor()
 
-    cursor.execute("""
-        SELECT id, username, role
-        FROM usuarios
-        ORDER BY id ASC
-    """)
+        cursor.execute("""
+            SELECT id, username, role
+            FROM usuarios
+            ORDER BY id ASC
+        """)
 
-    usuarios = cursor.fetchall()
+        usuarios = cursor.fetchall()
 
-
-    cursor.close()
-    conexao.close()
-
+        cursor.close()
+        conexao.close()
+        
+    except mysql.connector.Error as err:
+        print(f"Erro ao buscar usuários: {err}")
+        usuarios = [] # Lista vazia para não quebrar o HTML caso o banco falhe
 
     # =====================================================
     # ENVIA OS USUÁRIOS PARA O HTML
     # =====================================================
-
     return render_template(
         'cadastrar_usuarios.html',
         usuarios=usuarios
     )
+
    
 
 # ROTA QUE MOSTRA OS ITENS DO ESTOQUE (Unificada e Protegida)
@@ -274,4 +284,4 @@ def salvar():
         return "Erro ao atualizar quantidade no banco", 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0,')

@@ -37,3 +37,6 @@ body
     "categoria": "Mecânica",
     "foto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpjkwDqzP3VKUBJUdVzeZvablEaW2vQMrUhU2PoKx7jw&s=10"
 }
+
+rota movimentação 
+método post
