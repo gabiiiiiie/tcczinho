@@ -191,47 +191,57 @@ def logout():
 
 
 # ROTA QUE RECEBE OS DADOS DO FORMULÁRIO E SALVA NO BANCO
-@app.route('/salvaritem', methods=['POST'])
-def salvar_item():
+# 1. ROTA QUE CARREGA A PÁGINA DO FORMULÁRIO (GET)
+@app.route('/adicionaritens', methods=['GET'])
+def adicionaritens():
     if 'usuario_logado' not in session: 
         return redirect(url_for('index'))
-    
-    nome = request.form['nome']
-    quantidade = request.form['quantidade']
-    estoque = request.form['estoque']
-    descricao = request.form['descricao']
-    preco_form = request.form['preco']  
+    return render_template('adicionaritens.html')
+
+
+# 2. ROTA QUE RECEBE OS DADOS E SALVA NO BANCO (POST)
+@app.route('/salvaritem', methods=['POST'])
+def salvaritem():
+    if 'usuario_logado' not in session:
+        return redirect(url_for('index'))
+
+    nome = request.form.get('nome')
+    quantidade = request.form.get('quantidade')
+    estoque = request.form.get('estoque')
+    descricao = request.form.get('descricao')
+    preco = request.form.get('preco')
     categoria = request.form.get('categoria')
-    foto = request.form['foto']
+    foto = request.form.get('foto')
+
+    # Validação no servidor: se faltar algo, redireciona de volta com aviso
+    if not all([nome, quantidade, estoque, descricao, preco, categoria, foto]):
+        flash("Todos os campos devem ser preenchidos!", "erro")
+        return redirect(url_for('adicionaritens'))
 
     try:
         conexao = obter_conexao()
         cursor = conexao.cursor()
 
         comando_sql = """
-            INSERT INTO estoque (Nome, Quantidade, Estoque, Descricao, Preco, Categoria, Foto) 
+            INSERT INTO estoque 
+            (Nome, Quantidade, Estoque, Descricao, Preco, Categoria, Foto)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        valores = (nome, quantity := quantidade, estoque, descricao, preco_form, categoria, foto)
-        
+        valores = (nome, int(quantidade), int(estoque), descricao, float(preco), categoria, foto)
+
         cursor.execute(comando_sql, valores)
         conexao.commit()
-        
+
         cursor.close()
         conexao.close()
 
+        flash("Item cadastrado com sucesso!", "sucesso")
         return redirect(url_for('banco'))
+
     except mysql.connector.Error as erro:
         print(f"Erro ao salvar item: {erro}")
-        return "Erro ao salvar item no banco", 500
-
-
-# 4. ROTA PARA ADICIONAR ITENS 
-@app.route('/adicionaritens', methods=['POST', 'GET'])
-def adicionaritens():
-    if 'usuario_logado' not in session: 
-        return redirect(url_for('index'))
-    return render_template('adicionaritens.html')
+        flash("Erro interno ao tentar salvar o item.", "erro")
+        return redirect(url_for('adicionaritens'))
     
 
 # ROTA PARA PAGINA MOVIMENTAÇÃO 
@@ -283,5 +293,11 @@ def salvar():
         print(f"Erro ao atualizar quantidade: {erro}")
         return "Erro ao atualizar quantidade no banco", 500
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0,')
+
+
+if __name__ == "__main__":
+    app.run(
+        debug=True,
+        host="0.0.0.0",
+        port=5000
+    )

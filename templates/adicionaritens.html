@@ -85,6 +85,30 @@ function erroImagem() {
         text: 'Verifique se o link está correto e aponta diretamente para uma imagem.'
     });
 }
+
+
+function validarFormulario(event) {
+    const nome = document.querySelector('input[name="nome"]').value.trim();
+    const quantidade = document.querySelector('input[name="quantidade"]').value.trim();
+    const estoque = document.querySelector('input[name="estoque"]').value.trim();
+    const descricao = document.querySelector('textarea[name="descricao"]').value.trim();
+    const preco = document.querySelector('input[name="preco"]').value.trim();
+    const categoria = document.querySelector('select[name="categoria"]').value;
+    const foto = document.querySelector('input[name="foto"]').value.trim();
+
+    if (!nome || !quantidade || !estoque || !descricao || !preco || !categoria || !foto) {
+        event.preventDefault(); // Impede o envio do formulário
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos Incompletos',
+            text: 'Por favor, preencha todos os campos do formulário antes de salvar.',
+            confirmButtonColor: '#007acc'
+        });
+        return false;
+    }
+    return true;
+}
 </script>
 
  <!-- NAVBAR -->
@@ -327,7 +351,23 @@ function erroImagem() {
 
     
     </div>
+<!-- Adicione a leitura das mensagens FLASH logo acima do <form> -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <script>
+        Swal.fire({
+          icon: "{{ 'success' if category == 'sucesso' else 'error' }}",
+          title: "{{ 'Sucesso!' if category == 'sucesso' else 'Atenção!' }}",
+          text: "{{ message }}"
+        });
+      </script>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
+<!-- Atualize a tag form adicionando o ID e o onsubmit -->
+<form id="formCadastrar" action="/salvaritem" method="POST" onsubmit="return validarFormulario(event)">
 </form>
 
 </body>

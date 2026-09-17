@@ -38,5 +38,27 @@ body
     "foto": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpjkwDqzP3VKUBJUdVzeZvablEaW2vQMrUhU2PoKx7jw&s=10"
 }
 
+codigo 201 - ok porem so qnd tudo esta preenchido (se faltar algm quantidade em numero, da erro)
+
 rota movimentação 
 método post
+http://127.0.0.1:5001/api/movimentacao
+
+body 
+{
+  "id_item": 4,
+  "tipo": "entrada",
+  "quantidade": 10
+}
+
+codigo 200 - ok
+
+rota usuarios
+metodo get
+http://127.0.0.1:5001/api/usuarios
+
+codigo 200 - ok
+
+rota usuarios 
+metodo post 
+http://127.0.0.1:5001/api/usuarios
