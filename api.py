@@ -1,7 +1,7 @@
 import json
 from flask import Flask, request, jsonify
 import mysql.connector
-from werkzeug.security import check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -88,14 +88,9 @@ def listar_itens():
 def cadastrar_item():
     dados = request.get_json(silent=True) or request.get_json(force=True)
 
-    if isinstance(dados, str):
-        try:
-            dados = json.loads(dados)
-        except Exception:
-            pass
+    if not dados:
+         return jsonify({"erro": "Preencha todos os campos!"}), 400
 
-    if not isinstance(dados, dict):
-        return jsonify({"erro": "Envie os dados em formato JSON válido"}), 400
 
     campos_obrigatorios = {
         "nome": "O campo 'nome' é obrigatório.",
@@ -107,10 +102,25 @@ def cadastrar_item():
         "foto": "O campo 'foto' é obrigatório."
     }
 
+    erros = []
+
+    # Verifica todos os campos e guarda as mensagens de erro
     for campo, mensagem_erro in campos_obrigatorios.items():
         valor = dados.get(campo)
         if valor is None or (isinstance(valor, str) and valor.strip() == ""):
-            return jsonify({"erro": mensagem_erro}), 400
+            erros.append(mensagem_erro)
+
+    # Se encontrar um ou mais erros, retorna a lista completa
+    if erros:
+        return jsonify({"erros": erros}), 400
+
+    # Conversão de tipos com validação prévia
+    try:
+        quantidade = int(dados["quantidade"])
+        estoque = int(dados["estoque"])
+        preco = float(dados["preco"])
+    except ValueError:
+        return jsonify({"erro": "Os campos quantidade, estoque e preço devem ser números válidos."}), 400
 
     try:
         banco = conectar()
@@ -118,18 +128,18 @@ def cadastrar_item():
 
         cursor.execute(
             """
-            INSERT INTO estoque
+            INSERT INTO estoque 
             (Nome, Quantidade, Estoque, Descricao, Preco, Categoria, Foto)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             """,
             (
-                dados["nome"],
-                int(dados["quantidade"]),
-                int(dados["estoque"]),
-                dados["descricao"],
-                float(dados["preco"]),
-                dados["categoria"],
-                dados["foto"]
+                dados["nome"].strip(),
+                quantidade,
+                estoque,
+                dados["descricao"].strip(),
+                preco,
+                dados["categoria"].strip(),
+                dados["foto"].strip()
             )
         )
 
@@ -274,6 +284,11 @@ def cadastrar_usuario():
         "password": "O campo 'password' é obrigatório.",
         "role": "O campo 'role' é obrigatório."
     }
+
+    # Validação do tamanho mínimo da senha
+    senha = dados.get("password", "")
+    if len(str(senha)) < 4:
+        return jsonify({"erro": "A senha deve conter no mínimo 4 caracteres."}), 400
 
     for campo, mensagem in campos_obrigatorios.items():
         valor = dados.get(campo)

@@ -103,8 +103,12 @@ def cadastrar_usuarios():
         nova_senha = request.form.get("password")
         nova_role = request.form.get("role")  # Captura a escolha do HTML
 
+        #
+
         # CRIPTOGRAFIA: Transforma a senha em uma hash segura
         senha_criptografada = generate_password_hash(nova_senha)
+
+   
 
         try:
             conexao = obter_conexao()

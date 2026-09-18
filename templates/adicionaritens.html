@@ -86,7 +86,6 @@ function erroImagem() {
     });
 }
 
-
 function validarFormulario(event) {
     const nome = document.querySelector('input[name="nome"]').value.trim();
     const quantidade = document.querySelector('input[name="quantidade"]').value.trim();
@@ -101,8 +100,7 @@ function validarFormulario(event) {
 
         Swal.fire({
             icon: 'warning',
-            title: 'Campos Incompletos',
-            text: 'Por favor, preencha todos os campos do formulário antes de salvar.',
+            title: 'Preencha todos os campos!',
             confirmButtonColor: '#007acc'
         });
         return false;
@@ -226,7 +224,7 @@ function validarFormulario(event) {
         <h2>Cadastrar Novo Item</h2>
         
        
-   <form action="/salvaritem" method="POST">
+   <form id="formCadastrar" action="/salvaritem" method="POST" onsubmit="return validarFormulario(event)"></form>
 
     <div class="form-grupo">
         <label>Nome do Item:</label>
@@ -366,9 +364,7 @@ function validarFormulario(event) {
   {% endif %}
 {% endwith %}
 
-<!-- Atualize a tag form adicionando o ID e o onsubmit -->
-<form id="formCadastrar" action="/salvaritem" method="POST" onsubmit="return validarFormulario(event)">
-</form>
+
 
 </body>
 </html>
