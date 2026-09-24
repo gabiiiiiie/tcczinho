@@ -671,7 +671,7 @@ body.pagina-usuarios .usuarios-page h1 {
 
 body.pagina-usuarios .form-usuario {
 
-    width: 600px;
+    width: 550px;
 
     max-width: calc(100% - 30px);
 
@@ -693,7 +693,7 @@ body.pagina-usuarios .form-usuario {
 
 body.pagina-usuarios .form-titulo {
 
-    max-width: 100%;;
+    max-width: 550px;
 
     padding: 16px 20px;
 

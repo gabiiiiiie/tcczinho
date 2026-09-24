@@ -151,6 +151,20 @@ function validarFormulario(event) {
 
                     </li>
 
+                     <!--BANCO-->
+
+                    <li class="nav-item">
+
+                        <a class="nav-link"
+                           href="/banco"
+                           style="color: rgb(41, 38, 38);">
+
+                            Estoque 
+
+                        </a>
+
+                    </li>
+
 
                     <!-- CADASTRAR ITEM -->
 
@@ -223,148 +237,62 @@ function validarFormulario(event) {
     <div class="container-cadastro">
         <h2>Cadastrar Novo Item</h2>
         
-       
-   <form id="formCadastrar" action="/salvaritem" method="POST" onsubmit="return validarFormulario(event)"></form>
+        <!-- O formulário abre aqui -->
+        <form id="formCadastrar" action="/salvaritem" method="POST" onsubmit="return validarFormulario(event)">
 
-    <div class="form-grupo">
-        <label>Nome do Item:</label>
-        <input
-            type="text"
-            name="nome"
-            required
-            minlength="2"
-        >
+            <div class="form-grupo">
+                <label>Nome do Item:</label>
+                <input type="text" name="nome" required minlength="2">
+            </div>
+
+            <div class="form-grupo">
+                <label>Quantidade:</label>
+                <input type="number" name="quantidade" min="0" required>
+            </div>
+
+            <div class="form-grupo">
+                <label>Estoque Mínimo:</label>
+                <input type="number" name="estoque" min="0" required>
+            </div>
+
+            <div class="form-grupo">
+                <label>Descrição:</label>
+                <textarea name="descricao" rows="3" required minlength="3"></textarea>
+            </div>
+
+            <div class="form-grupo">
+                <label>Preço:</label>
+                <input type="number" step="0.01" name="preco" min="0" required>
+            </div>
+
+            <div class="form-grupo">
+                <label>Categoria:</label>
+                <select id="categoria" name="categoria" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    <option value="" disabled selected>Selecione...</option>
+                    <option value="Elétrica">Eletrônicos</option>
+                    <option value="Mecânica">Ferramentas</option>
+                    <option value="Geral">Ferramentas</option>
+                </select>
+            </div>
+
+            <!-- Campo da Foto (Necessário para o seu script funcionar) -->
+            <div class="form-grupo">
+                <label>Link da Foto:</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="foto" name="foto" required placeholder="https://...">
+                    <button type="button" onclick="visualizarFoto()" style="background: #6c757d; color: white; border: none; padding: 0 10px; border-radius: 6px; cursor: pointer;">Ver</button>
+                </div>
+            </div>
+
+            <!-- BOTÕES DE AÇÃO (Agora dentro do formulário) -->
+            <div class="botoes-cadastro">
+                <!-- O type="submit" é o que faz o botão disparar o envio -->
+                <button type="submit" class="btn-salvar">Salvar Item</button>
+                <a href="/movimentacao" class="btn-cancelar">Cancelar</a>
+            </div>
+
+        </form> <!-- O formulário só fecha aqui no final -->
     </div>
-
-    <div class="form-grupo">
-        <label>Quantidade:</label>
-        <input
-            type="number"
-            name="quantidade"
-            min="0"
-            required
-        >
-    </div>
-
-    <div class="form-grupo">
-        <label>Estoque Mínimo:</label>
-        <input
-            type="number"
-            name="estoque"
-            min="0"
-            required
-        >
-    </div>
-
-    <div class="form-grupo">
-        <label>Descrição:</label>
-        <textarea
-            name="descricao"
-            rows="3"
-            required
-            minlength="3"
-        ></textarea>
-    </div>
-
-    <div class="form-grupo">
-        <label>Preço:</label>
-        <input
-            type="number"
-            step="0.01"
-            name="preco"
-            min="0"
-            required
-        >
-    </div>
-
-    <div class="form-grupo">
-        <label>Categoria:</label>
-
-        <select
-            id="categoria"
-            name="categoria"
-            required
-        >
-            <option value="" selected disabled>
-                Selecione uma categoria
-            </option>
-
-            <option value="Elétrica">
-                Elétrica
-            </option>
-
-            <option value="Mecânica">
-                Mecânica
-            </option>
-
-            <option value="Geral">
-                Geral
-            </option>
-        </select>
-    </div>
-
-    <div class="form-grupo">
-        <label>Link da imagem:</label>
-
-        <input
-            type="url"
-            id="foto"
-            name="foto"
-            placeholder="https://imagem.com/imagem.jpg"
-            required
-        >
-
-        <button
-            type="button"
-            onclick="visualizarFoto()"
-            style="
-                margin-top: 8px;
-                background-color: #007acc;
-                color: white;
-                border: none;
-                padding: 8px 15px;
-                border-radius: 6px;
-                cursor: pointer;
-            "
-        >
-            Visualizar imagem
-        </button>
-    </div>
-
-    <div class="botoes-cadastro">
-
-        <button
-            type="submit"
-            class="btn-salvar"
-        >
-            Salvar Item
-        </button>
-
-        <a
-            href="/banco"
-            class="btn-cancelar"
-        >
-            Cancelar
-        </a>
-
-    
-    </div>
-<!-- Adicione a leitura das mensagens FLASH logo acima do <form> -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <script>
-        Swal.fire({
-          icon: "{{ 'success' if category == 'sucesso' else 'error' }}",
-          title: "{{ 'Sucesso!' if category == 'sucesso' else 'Atenção!' }}",
-          text: "{{ message }}"
-        });
-      </script>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-
-
-
 </body>
+
 </html>
