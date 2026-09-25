@@ -9,11 +9,11 @@ app = Flask(__name__)
 # CONEXÃO COM O BANCO
 def conectar():
     return mysql.connector.connect(
-        host="localhost",
+        host="db",
         port=3306,
         database="almoxarifado",
         user="root",
-        password=""
+        password="mysql_root"
     )
 
 
@@ -22,7 +22,7 @@ def conectar():
 # =========================
 
 @app.route("/api/login", methods=["POST"])
-def login():
+def login_web():
     dados = request.get_json(silent=True) or request.get_json(force=True)
 
     if not dados or not isinstance(dados, dict):

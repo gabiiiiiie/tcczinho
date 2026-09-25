@@ -1,0 +1,22 @@
+services:
+  # Container do  MySQL
+  db:
+    image: mysql:8.0
+    container_name: almox-db
+    environment:
+      MYSQL_DATABASE: almoxarifado
+      MYSQL_ROOT_PASSWORD: " "
+    ports:
+      - "3306:3306"
+
+  # Container do app.py
+  site_web:
+    build: .
+    container_name: almox-site
+    ports:
+      - "5000:5000"
+    command: python app.py
+    depends_on:
+      - db
+
+
