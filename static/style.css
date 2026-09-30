@@ -1,4 +1,4 @@
-/* Reset inicial para aplicar a fonte tudo */
+
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +6,6 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* MODIFICADO: Removido left: 900px e adicionado justify-content para centralizar o container */
 body.paginaindex {
     min-height: 100vh;
     display: flex;
@@ -19,7 +18,6 @@ body.paginaindex {
 body.paginabanco {
     background-color:#1867a8;
 }
-
 
 body.paginamovimentacao {
     background-color: #1867a8;
@@ -143,7 +141,7 @@ form {
     width: 600px;
     height: 400px;
     background-color: #ffffff;
-    border-radius: 20px;
+    border-radius: 30px;
     padding: 20px;
     overflow-y: auto;
     text-align: center;
@@ -240,12 +238,14 @@ input::placeholder {
 }
 
 #tabelinha {
-    width: 90%;
-    margin: 30px auto;
-    border-collapse: collapse;
+    width: 100%;
+    margin: 0;
+    border-collapse: separate; 
+    border-spacing: 0;
     background-color: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
+    border-radius: 15px;
+    overflow: hidden; 
 }
 
 
@@ -256,7 +256,9 @@ input::placeholder {
     font-weight: bold;
     text-align: center;
     border: 1px solid #b96b37;
-    z-index: 2
+    z-index: 999;
+    position: sticky !important;
+    top: 0;
     
 }
 
@@ -273,11 +275,27 @@ input::placeholder {
 /* Efeito Zebrado nas linhas da tabela */
 #tabelinha tbody tr:nth-child(even) td {
     background-color: #ffffffc5 ;
+
 }
 
-/* Efeito do mouse na tabela */
+/* Efeito hover */
 #tabelinha tbody tr:hover td {
     background-color: #bbccda;
+}
+
+
+.container-tabela-scroll {
+    max-height: 438px;       
+    overflow-y: auto;   
+    width: 90%;             
+    margin: 30px auto;       
+    border-radius: 15px;      
+    box-shadow: 0 4px 15px rgba(148, 147, 147, 0.2);
+   
+}
+
+.container-tabela-scroll::-webkit-scrollbar {
+    display: none;
 }
 
 
@@ -615,9 +633,7 @@ body.pagina-usuarios .navbar .nav-link {
 }
 
 
-body.pagina-usuarios .navbar .nav-link:hover {
-    color: #1f6da8 !important;
-}
+
 
 
 /* =========================================================
@@ -743,9 +759,7 @@ body.pagina-usuarios .campo {
 }
 
 
-/* =========================================================
-   LABEL
-   ========================================================= */
+/* LABEL */
 
 body.pagina-usuarios .campo label {
 
