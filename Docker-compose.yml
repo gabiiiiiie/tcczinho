@@ -3,13 +3,14 @@ services:
   db:
     image: mysql:8.0
     container_name: almox-db
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: almoxarifado
       MYSQL_ROOT_PASSWORD: "mysql_root"
     ports:
       - "3306:3306"
     volumes:
-     C:\Users\Aluno\Desktop\tcczinho\banco.sql
+      - ./banco.sql:/docker-entrypoint-initdb.d/banco.sql
 
 
   # Container - app.py

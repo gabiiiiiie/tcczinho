@@ -9,11 +9,11 @@ app.secret_key = 'chave_secreta_para_seguranca'
 # CONFIGURAÇÃO DE CONEXÃO PADRÃO 
 def obter_conexao():
     return mysql.connector.connect(
-        host='127.0.0.1',
+        host="db",
         port=3306,
-        database='almoxarifado',
+        database="almoxarifado",
         user='root',
-        password=''
+        password="mysql_root"
     )
 
 # 1. ROTA INDEX
@@ -297,6 +297,8 @@ def salvar():
         print(f"Erro ao atualizar quantidade: {erro}")
         return "Erro ao atualizar quantidade no banco", 500
 
+
+####################################
 @app.route("/api/login", methods=["POST"])
 def login_web():
     dados = request.get_json(silent=True) or request.get_json(force=True)
@@ -310,7 +312,8 @@ def login_web():
     if not username or not password:
         return jsonify({"erro": "Usuário e senha são obrigatórios"}), 400
 
-    banco = conectar()
+
+    banco = obter_conexao()
     cursor = banco.cursor(dictionary=True)
 
     cursor.execute(
@@ -342,7 +345,7 @@ def login_web():
 @app.route("/api/itens", methods=["GET"])
 def listar_itens():
     try:
-        banco = conectar()
+        banco = obter_conexao()
         cursor = banco.cursor(dictionary=True)
 
         cursor.execute("SELECT * FROM estoque ORDER BY Id ASC")
@@ -399,7 +402,7 @@ def cadastrar_item():
         return jsonify({"erro": "Os campos quantidade, estoque e preço devem ser números válidos."}), 400
 
     try:
-        banco = conectar()
+        banco = obter_conexao()
         cursor = banco.cursor()
 
         cursor.execute(
@@ -466,7 +469,7 @@ def movimentacao():
             "erro": "A quantidade deve ser maior que zero"
         }), 400
 
-    banco = conectar()
+    banco = obter_conexao()
     cursor = banco.cursor()
 
     cursor.execute(
@@ -528,7 +531,7 @@ def movimentacao():
 @app.route("/api/usuarios", methods=["GET"])
 def listar_usuarios():
     try:
-        banco = conectar()
+        banco = obter_conexao()
         cursor = banco.cursor(dictionary=True)
 
         # Não retornamos a senha por questões de segurança
@@ -575,7 +578,7 @@ def cadastrar_usuario():
     senha_hash = generate_password_hash(dados["password"])
 
     try:
-        banco = conectar()
+        banco = obter_conexao()
         cursor = banco.cursor()
 
         cursor.execute(

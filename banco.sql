@@ -1,6 +1,4 @@
-create database almoxarifado;
-
-use almoxarifado; 
+create database IF NOT EXISTS almoxarifado;
 
 CREATE TABLE estoque (
 	Id INT PRIMARY KEY,
@@ -12,9 +10,6 @@ CREATE TABLE estoque (
     Categoria VARCHAR(50),
     Foto TEXT
 );
-
-DROP TABLE IF EXISTS estoque;
-
 
 Insert into estoque (Id, Nome, Quantidade, Estoque, Descricao, Preco, Categoria, Foto) VALUES
 ('1', 'Teclado Mecânico', 15, 5, 'Teclado com fio USB', 70, 'Elétrica', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-aidvEp1LNqovukNUgoGQyAasv3eAmhkVmRNIKhZOQg&s=10'),
@@ -34,15 +29,11 @@ CREATE TABLE usuarios (
 );
 
 
-
-
 INSERT INTO usuarios (username, password, role)
 VALUES ('admin', 'scrypt:32768:8:1$cqggDDvEcPHxEdOf$6c150efad1bc7b29d19cfa94ff0b68a46bfb31e86de0ccd74dad1710b8cf3249b3e8bb9ad347df27fa9c9f496946029133aa3d1fb243b86bb73e8d7125341bb6', 'admin');
 
-DROP TABLE IF EXISTS usuarios;
-
-SELECT * FROM estoque;
 
 
 
-DESCRIBE usuarios;
+
+
