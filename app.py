@@ -13,8 +13,9 @@ def obter_conexao():
         port=3306,
         database="almoxarifado",
         user='root',
-        password="mysql_root"
-    )
+        password="mysql_root",
+        charset= "utf8mb4"
+)
 
 # 1. ROTA INDEX
 @app.route('/')
