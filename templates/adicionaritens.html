@@ -238,7 +238,7 @@ function validarFormulario(event) {
         <h2>Cadastrar Novo Item</h2>
         
         <!-- O formulário abre aqui -->
-        <form id="formCadastrar" action="/salvaritem" method="POST" onsubmit="return validarFormulario(event)">
+        <form id="formCadastrar" action="/salvaritem" method="POST">
 
             <div class="form-grupo">
                 <label>Nome do Item:</label>
@@ -288,7 +288,7 @@ function validarFormulario(event) {
             <div class="botoes-cadastro">
                 <!-- O type="submit" é o que faz o botão disparar o envio -->
                 <button type="submit" class="btn-salvar">Salvar Item</button>
-                <a href="/movimentacao" class="btn-cancelar">Cancelar</a>
+                <a href="/banco" class="btn-cancelar">Cancelar</a>
             </div>
 
         </form> <!-- O formulário só fecha aqui no final -->

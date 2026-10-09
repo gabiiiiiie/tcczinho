@@ -1,7 +1,7 @@
 create database IF NOT EXISTS almoxarifado;
 
 CREATE TABLE estoque (
-	Id INT PRIMARY KEY,
+	Id INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(100),
     Quantidade INT,
     Estoque INT,

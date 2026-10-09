@@ -239,15 +239,25 @@ def salvaritem():
 
         cursor.close()
         conexao.close()
-
+        print("teste3")
         flash("Item cadastrado com sucesso!", "sucesso")
         return redirect(url_for('banco'))
 
+
+#### teste prof
+#####
+   ##### except mysql.connector.Error as erro:
+      #####  print(f"Erro ao salvar item: {erro}")
+      #####  flash("Erro interno ao tentar salvar o item.", "erro")
+       ##### return redirect(url_for('adicionaritens'))
+
     except mysql.connector.Error as erro:
-        print(f"Erro ao salvar item: {erro}")
-        flash("Erro interno ao tentar salvar o item.", "erro")
+        # Isso vai cuspir o erro exato na tela do seu navegador
+        flash(f"Erro Real de Conexão com o Docker: {erro}", "erro")
         return redirect(url_for('adicionaritens'))
-    
+
+
+   
 
 # ROTA PARA PAGINA MOVIMENTAÇÃO 
 @app.route('/movimentacao', methods=['GET', 'POST'])
