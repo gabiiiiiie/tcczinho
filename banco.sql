@@ -1,3 +1,5 @@
+SET NAMES 'utf8mb4';
+
 create database IF NOT EXISTS almoxarifado;
 
 CREATE TABLE estoque (
@@ -12,7 +14,7 @@ CREATE TABLE estoque (
 );
 
 Insert into estoque (Id, Nome, Quantidade, Estoque, Descricao, Preco, Categoria, Foto) VALUES
-('1', 'Teclado MecÃ¢nico', 15, 15, 'Teclado com fio USB', 70, 'Elétrica', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-aidvEp1LNqovukNUgoGQyAasv3eAmhkVmRNIKhZOQg&s=10'),
+('1', 'Teclado Mecânico', 15, 15, 'Teclado com fio USB', 70, 'Elétrica', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-aidvEp1LNqovukNUgoGQyAasv3eAmhkVmRNIKhZOQg&s=10'),
 ('2', 'Monitor', 20, 35, 'Monitor DELL', 200 , 'Elétrica', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4o5vXJipEo3j0Ra006a9xaGm4CX0OXmBWCKmKrb-U1g&s=10'),
 ('3', 'Cabo USB', 22, 5, 'Cabo USB tipo A', 200 , 'Elétrica', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzpqbaUeP_m_dsQbAd3LPWZwGT8GBNlZHrzDGCTY-kIw&s=10'),
 ('4', 'Caneta', 120, 20, 'Caneta bic', 2 , 'Geral', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwuCuOgH09-MzcNV4bEkYSDUuh2l_7g6y3yqOu84mLGA&s=10'),
