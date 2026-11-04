@@ -1,43 +1,70 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 
+// 💡 Mantendo o IP e a porta do seu container Docker:
+const URL_API = 'http://10.154.20.172:5000'; 
+
 export default function LoginScreen({ navegar }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState(''); // Armazena '1' (Admin) ou '2' (Usuário)
+  const [role, setRole] = useState(''); // '1' para Admin, '2' para Usuário comum
 
   const tentarLogin = () => {
-    // Validação de nível de acesso igual ao seu select do HTML
     if (!role) {
-      Alert.alert('Erro', 'Por favor, selecione um nível de acesso.');
+      Alert.alert('Erro', 'Por favor, selecione um nível de acesso visual.');
       return;
     }
     
-    // Validação de campos vazios
     if (!username.trim() || !password.trim()) {
       Alert.alert('Erro', 'Usuário e senha são obrigatórios!');
       return;
     }
 
-    // Alerta de sucesso nativo
-    Alert.alert('Sucesso', `Logado como ${role === '1' ? 'Administrador' : 'Usuário'}!`);
-    
-    // Executa a função que joga o aplicativo para a tela do estoque
-    if (typeof navegar === 'function') {
-      navegar('Banco');
-    }
+    // 🔥 ENVIANDO REQUISIÇÃO EM FORMATO JSON CONFORME O SEU CÓDIGO FLASK EXIGE
+    fetch(`${URL_API}/api/login`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: username.trim(),
+        password: password
+      })
+    })
+    .then(async (res) => {
+      const dados = await res.json();
+      
+      if (res.ok) {
+        // Puxa o 'role' real vindo diretamente da tabela de usuários do seu banco MySQL
+        const nivelAcessoReal = String(dados.role); // Certifica que vira texto ('1' ou '2')
+         Alert.alert("Teste de Retorno do Docker", "O Flask retornou:\n" + JSON.stringify(dados));
+
+        Alert.alert('Sucesso', `Logado como ${nivelAcessoReal.toLowerCase() === 'admin' ? 'Administrador' : 'Usuário'}!`);
+
+        
+        if (typeof navegar === 'function') {
+          // Passamos o nível de acesso adiante na navegação para que o App.js gerencie a Tab Bar
+          navegar('banco', nivelAcessoReal); 
+        }
+      } else {
+        // Exibe o erro tratado pelo Flask ("Usuário não encontrado" ou "Senha incorreta")
+        Alert.alert('Erro de Autenticação', dados.erro || 'Credenciais inválidas.');
+      }
+    })
+    .catch((erro) => {
+      console.error(erro);
+      Alert.alert('Erro de Conexão', 'Não foi possível se comunicar com a rota /api/login do Docker.');
+    });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.caixaLogin}>
         
-        {/* Identificação visual do Senai */}
         <Text style={styles.logoSenai}>SENAI</Text>
         <Text style={styles.subtitulo}>Gestão de Estoque</Text>
 
-        {/* Seletor simplificado (Substitui o <select>) */}
-        <Text style={styles.label}>Nível de Acesso:</Text>
+        <Text style={styles.label}>Nível de Acesso Esperado:</Text>
         <View style={styles.rowSelector}>
           <TouchableOpacity 
             style={[styles.btnSelect, role === '1' && styles.btnSelectAtivo]} 
@@ -54,7 +81,6 @@ export default function LoginScreen({ navegar }) {
           </TouchableOpacity>
         </View>
 
-        {/* Campo de Usuário */}
         <TextInput 
           style={styles.input} 
           placeholder="Nome de Usuário" 
@@ -63,7 +89,6 @@ export default function LoginScreen({ navegar }) {
           autoCapitalize="none"
         />
 
-        {/* Campo de Senha */}
         <TextInput 
           style={styles.input} 
           placeholder="Senha" 
@@ -72,7 +97,6 @@ export default function LoginScreen({ navegar }) {
           onChangeText={setPassword}
         />
 
-        {/* Botão Entrar */}
         <TouchableOpacity style={styles.botao} onPress={tentarLogin}>
           <Text style={styles.txtBotao}>Entrar</Text>
         </TouchableOpacity>
@@ -82,7 +106,6 @@ export default function LoginScreen({ navegar }) {
   );
 }
 
-// Estilizações limpas baseadas na sua folha de estilos original do almoxarifado
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f4f6f9', justifyContent: 'center', alignItems: 'center' },
   caixaLogin: { width: '85%', maxWidth: 360, backgroundColor: '#fff', padding: 25, borderRadius: 12, elevation: 4 },

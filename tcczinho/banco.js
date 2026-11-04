@@ -7,28 +7,57 @@ import {
   FlatList, 
   TouchableOpacity, 
   Alert, 
+  Image, // 💡 Importado o componente Image do React Native
   SafeAreaView 
 } from 'react-native';
 
-export default function EstoqueScreen() {
-  // LISTA FICTÍCIA (Simulando os dados que viriam da tabela MySQL pelo {% for item in resposta %})
-  const dadosMock = [
-    { id: 1, nome: 'Chave de Fenda', quantidade: 15, estoqueMin: 5, descricao: 'Ferramenta de aço', preco: '25.00', categoria: 'Ferramentas', foto: 'https://placeholder.com' },
-    { id: 2, nome: 'Martelo', quantidade: 2, estoqueMin: 4, descricao: 'Martelo 40mm', preco: '42.50', categoria: 'Ferramentas', foto: '' },
-  ];
+// Importa o componente Menu que criamos separado
+import Menu from './Menu'; 
 
+// 💡 Mantendo o IP e a porta do seu container Docker diretamente na página:
+const URL_API = 'http://10.154.20.172:5000';
+
+export default function BancoScreen({ navegar, nivelAcesso }) {
   const [pesquisa, setPesquisa] = useState('');
-  const [itensFiltrados, setItensFiltrados] = useState(dadosMock);
+  const [todosOsItens, setTodosOsItens] = useState([]); 
+  const [itensFiltrados, setItensFiltrados] = useState([]);
+  const [carregando, setCarregando] = useState(true);
 
-  // Função equivalente ao seu 'filtrarTabela()' em JavaScript
+  // 🔥 BUSCA OS ITENS DO BANCO DE DADOS DO DOCKER AO ABRIR A TELA
+  useEffect(() => {
+    fetch(`${URL_API}/api/itens`)
+      .then((res) => res.json())
+      .then((dados) => {
+        const dadosFormatados = dados.map(item => ({
+          id: item.Id || item.id || '',
+          nome: item.Nome || item.nome || 'Sem Nome',
+          quantidade: parseInt(item.Quantidade || item.quantidade || 0),
+          estoqueMin: parseInt(item.EstoqueMin || item.estoque_minimo || item.estoqueMin || 0),
+          descricao: item.Descricao || item.descricao || '',
+          preco: item.Preco || item.preco || '0.00',
+          categoria: item.Categoria || item.categoria || 'Geral',
+          foto: item.Foto || item.foto || '' // Puxa a string do link da foto salva no MySQL
+        }));
+
+        setTodosOsItens(dadosFormatados);
+        setItensFiltrados(dadosFormatados);
+        setCarregando(false);
+      })
+      .catch((erro) => {
+        console.error(erro);
+        setCarregando(false);
+        Alert.alert('Erro de Conexão', 'Não foi possível carregar os produtos reais do contêiner Docker.');
+      });
+  }, []);
+
   const filtrarTabela = (texto) => {
     setPesquisa(texto);
     if (!texto.trim()) {
-      setItensFiltrados(dadosMock);
+      setItensFiltrados(todosOsItens);
       return;
     }
     const termo = texto.toLowerCase();
-    const resultado = dadosMock.filter(item => 
+    const resultado = todosOsItens.filter(item => 
       item.nome.toLowerCase().includes(termo) || 
       item.descricao.toLowerCase().includes(termo) ||
       item.categoria.toLowerCase().includes(termo)
@@ -36,24 +65,29 @@ export default function EstoqueScreen() {
     setItensFiltrados(resultado);
   };
 
-  // Função equivalente ao seu 'verFoto()' que usava SweetAlert2
   const verFoto = (url, nome) => {
-    if (!url || url.trim() === '') {
-      Alert.alert('Foto não encontrada', 'Este produto não possui uma foto cadastrada.');
+    if (!url || url.trim() === '' || url.includes('placeholder')) {
+      Alert.alert('Foto não encontrada', 'Este produto não possui uma foto válida cadastrada no banco.');
       return;
     }
-    // Mostra um alerta nativo com o link (No app real, você pode usar um componente de <Image>)
-    Alert.alert(nome, `Link da imagem:\n${url}`);
+    Alert.alert(nome, `Link completo da imagem:\n${url}`);
   };
 
-  // Renderiza cada linha/card do estoque
   const renderItem = ({ item }) => {
-    // Alerta visual simples se o estoque estiver abaixo do mínimo
     const estoqueBaixo = item.quantidade < item.estoqueMin;
+    
+    // 💡 Define uma imagem padrão caso o link do banco esteja vazio ou inválido
+    const imagemValida = item.foto && item.foto.trim() !== '' && !item.foto.includes('placeholder')
+      ? { uri: item.foto } 
+      : { uri: 'https://flaticon.com' }; // Ícone de caixa/produto genérico
 
     return (
       <View style={[styles.cardItem, estoqueBaixo && styles.alertaEstoque]}>
-        <View style={{ flex: 1 }}>
+        
+        {/* 🔥 EXIBE A FOTO REAL DO PRODUTO DIRETO NO CARD */}
+        <Image source={imagemValida} style={styles.miniaturaFoto} resizeMode="cover" />
+
+        <View style={{ flex: 1, marginLeft: 12 }}>
           <Text style={styles.nomeItem}>#{item.id} - {item.nome}</Text>
           <Text style={styles.txtSecundario}>Qtd: {item.quantidade} (Mín: {item.estoqueMin})</Text>
           <Text style={styles.txtSecundario}>Cat: {item.categoria} | R\$ {item.preco}</Text>
@@ -61,7 +95,7 @@ export default function EstoqueScreen() {
         </View>
 
         <TouchableOpacity style={styles.btnFoto} onPress={() => verFoto(item.foto, item.nome)}>
-          <Text style={styles.txtBtn}>Imagem</Text>
+          <Text style={styles.txtBtn}>Link</Text>
         </TouchableOpacity>
       </View>
     );
@@ -69,35 +103,41 @@ export default function EstoqueScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.titulo}>Almoxarifado</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.titulo}>Almoxarifado</Text>
 
-      {/* Caixa de Pesquisa */}
-      <TextInput
-        style={styles.inputPesquisa}
-        placeholder="Pesquise por nome do item..."
-        value={pesquisa}
-        onChangeText={filtrarTabela}
-      />
+        <TextInput
+          style={styles.inputPesquisa}
+          placeholder="Pesquise por nome do item..."
+          value={pesquisa}
+          onChangeText={filtrarTabela}
+        />
 
-      {/* Tabela/Lista em formato de Cards */}
-      <FlatList
-        data={itensFiltrados}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        ListEmptyComponent={<Text style={styles.listaVazia}>Nenhum item encontrado.</Text>}
-      />
+        {carregando ? (
+          <Text style={styles.listaVazia}>Carregando estoque do MySQL...</Text>
+        ) : (
+          <FlatList
+            data={itensFiltrados}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+            contentContainerStyle={{ paddingBottom: 15 }}
+            ListEmptyComponent={<Text style={styles.listaVazia}>Nenhum item encontrado.</Text>}
+          />
+        )}
+      </View>
+
+      <Menu navegar={navegar} telaAtiva="banco" nivelAcesso={nivelAcesso} />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f4f6f9', padding: 15 },
+  container: { flex: 1, backgroundColor: '#f4f6f9', paddingHorizontal: 15, paddingTop: 10 },
   titulo: { fontSize: 24, fontWeight: 'bold', color: '#333', textAlign: 'center', marginVertical: 15 },
   inputPesquisa: { backgroundColor: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', marginBottom: 15, fontSize: 14 },
   cardItem: { 
     backgroundColor: '#fff', 
-    padding: 15, 
+    padding: 12, 
     borderRadius: 8, 
     flexDirection: 'row', 
     alignItems: 'center', 
@@ -106,11 +146,17 @@ const styles = StyleSheet.create({
     borderColor: '#eee',
     elevation: 2 
   },
-  alertaEstoque: { borderColor: '#dc3545', backgroundColor: '#fff5f5' }, // Visual sutil se faltar estoque
-  nomeItem: { fontSize: 16, fontWeight: 'bold', color: '#212529' },
-  txtSecundario: { fontSize: 13, color: '#6c757d', marginTop: 2 },
-  descricao: { fontSize: 12, color: '#999', marginTop: 4, fontStyle: 'italic' },
-  btnFoto: { backgroundColor: '#007acc', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 6, marginLeft: 10 },
+  miniaturaFoto: {
+    width: 55,
+    height: 55,
+    borderRadius: 6,
+    backgroundColor: '#eee'
+  },
+  alertaEstoque: { borderColor: '#dc3545', backgroundColor: '#fff5f5' },
+  nomeItem: { fontSize: 15, fontWeight: 'bold', color: '#212529' },
+  txtSecundario: { fontSize: 12, color: '#6c757d', marginTop: 1 },
+  descricao: { fontSize: 11, color: '#999', marginTop: 3, fontStyle: 'italic' },
+  btnFoto: { backgroundColor: '#007acc', paddingVertical: 8, paddingHorizontal: 10, borderRadius: 6, marginLeft: 5 },
   txtBtn: { color: '#fff', fontWeight: 'bold', fontSize: 12 },
   listaVazia: { textAlign: 'center', color: '#6c757d', marginTop: 20, fontStyle: 'italic' }
 });
