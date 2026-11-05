@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "expo/AppEntry",
   "dependencies": {
-    "expo": "^58.0.17",
+    "expo": "^58.0.23",
     "expo-status-bar": "~2.0.1",
     "react": "18.3.1",
     "react-native": "0.76.5"
