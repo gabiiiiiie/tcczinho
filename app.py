@@ -4,6 +4,9 @@ import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+from flask_cors import CORS
+CORS(app)
+
 app.secret_key = 'chave_secreta_para_seguranca'
 
 # CONFIGURAÇÃO DE CONEXÃO PADRÃO 
@@ -27,11 +30,11 @@ def index():
 # ROTA QUE VALIDA O LOGIN
 @app.route("/login", methods=["POST"])
 def login():
-    username_digitado = request.form.get("username")
-    password_digitada = request.form.get("password")
-    role_selecionado = request.form.get(
-        "role"
-    )  # Pega o 1 (Admin) ou 2 (Usuário) do HTML
+    dados = request.get_json(silent=True) or request.form
+    username_digitado = dados.get("username")
+    password_digitada = dados.get("password")
+    role_selecionado = str(dados.get("role", ""))
+
 
     # VALIDAÇÃO OBRIGATÓRIA DO SELECT NO BACKEND
     if not role_selecionado or role_selecionado not in ["1", "2"]:

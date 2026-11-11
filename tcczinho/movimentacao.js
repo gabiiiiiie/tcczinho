@@ -3,7 +3,7 @@ import Menu from './Menu';
 import { StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 
 // 💡 Mantendo o IP e a porta do seu container Docker:
-const URL_API = 'http://10.154.20.172:5000'; 
+import { URL_API } from './config';
 
 export default function MovimentacaoScreen({ navegar, nivelAcesso })  {
   // Inicializamos o estado como uma lista vazia para receber os dados do Docker
@@ -13,14 +13,14 @@ export default function MovimentacaoScreen({ navegar, nivelAcesso })  {
   const [quantidade, setQuantidade] = useState('');
   const [carregando, setCarregando] = useState(true);
 
-  // 🔥 BUSCA OS ITENS DO BANCO DE DADOS DO DOCKER AO ABRIR A TELA
+  // BUSCA OS ITENS DO BANCO DE DADOS DO DOCKER AO ABRIR A TELA
   useEffect(() => {
     // Nota: Certifique-se de ajustar a rota '/api/itens' para o endpoint exato da sua rota GET de listagem
     fetch(`${URL_API}/api/itens`)
       .then((res) => res.json())
       .then((dados) => {
         // Mapeia os dados do MySQL para o formato esperado pelos componentes da tela
-        // Se a sua API já retornar propriedades em letras minúsculas (id, nome, atual), remova o .map
+  
         const itensFormatados = dados.map(item => ({
           id: String(item.Id || item.id || ''),
           nome: item.Nome || item.nome || '',

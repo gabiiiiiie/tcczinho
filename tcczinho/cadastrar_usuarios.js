@@ -11,7 +11,7 @@ import {
   SafeAreaView 
 } from 'react-native';
 
-const URL_API = 'http://10.154.20.172:5000'; 
+import { URL_API } from './config';
 
 
 export default function CadastrarUsuariosScreen({ navegar, nivelAcesso }) {
