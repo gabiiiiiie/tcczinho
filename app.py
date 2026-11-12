@@ -614,6 +614,150 @@ def cadastrar_usuario():
         if "Duplicate entry" in str(erro):
             return jsonify({"erro": "Este nome de usuário já está em uso."}), 400
         return jsonify({"erro_banco": str(erro)}), 500
+    
+
+
+
+    # =====================================================================
+# ROTAS DE API JSON PARA O APLICATIVO REACT NATIVE (MOBILE / EXPO)
+# =====================================================================
+
+@app.route("/api/login", methods=["POST"])
+def api_login():
+    dados = request.get_json(silent=True) or {}
+    username = dados.get("username")
+    password = dados.get("password")
+
+    if not username or not password:
+        return jsonify({"erro": "Preencha usuário e senha."}), 400
+
+    try:
+        conexao = obter_conexao()
+        cursor = conexao.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM usuarios WHERE username = %s", (username,))
+        usuario = cursor.fetchone()
+        cursor.close()
+        conexao.close()
+
+        if usuario and check_password_hash(usuario["password"], password):
+            return jsonify({
+                "mensagem": "Login realizado!",
+                "username": usuario["username"],
+                "role": usuario["role"]
+            }), 200
+        else:
+            return jsonify({"erro": "Usuário ou senha incorretos."}), 401
+
+    except mysql.connector.Error as erro:
+        return jsonify({"erro": f"Erro no banco: {erro}"}), 500
+
+
+@app.route("/api/itens", methods=["GET", "POST"])
+def api_itens():
+    if request.method == "GET":
+        try:
+            conexao = obter_conexao()
+            cursor = conexao.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM estoque ORDER BY Id ASC")
+            itens = cursor.fetchall()
+            cursor.close()
+            conexao.close()
+            return jsonify(itens), 200
+        except mysql.connector.Error as erro:
+            return jsonify({"erro": str(erro)}), 500
+
+    if request.method == "POST":
+        dados = request.get_json(silent=True) or {}
+        try:
+            conexao = obter_conexao()
+            cursor = conexao.cursor()
+            sql = """
+                INSERT INTO estoque (Nome, Quantidade, Estoque, Descricao, Preco, Categoria, Foto)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+            valores = (
+                dados.get("nome"),
+                int(dados.get("quantidade", 0)),
+                int(dados.get("estoque", 0)),
+                dados.get("descricao", ""),
+                float(dados.get("preco", 0)),
+                dados.get("categoria", "Geral"),
+                dados.get("foto", "")
+            )
+            cursor.execute(sql, valores)
+            conexao.commit()
+            cursor.close()
+            conexao.close()
+            return jsonify({"mensagem": "Item cadastrado com sucesso!"}), 201
+        except Exception as erro:
+            return jsonify({"erro": str(erro)}), 500
+
+
+@app.route("/api/movimentacao", methods=["POST"])
+def api_movimentacao():
+    dados = request.get_json(silent=True) or {}
+    id_item = dados.get("id_item")
+    tipo = dados.get("tipo")
+    qtd = int(dados.get("quantidade", 0))
+
+    try:
+        conexao = obter_conexao()
+        cursor = conexao.cursor(dictionary=True)
+        cursor.execute("SELECT Quantidade FROM estoque WHERE Id = %s", (id_item,))
+        item = cursor.fetchone()
+
+        if not item:
+            return jsonify({"erro": "Item não encontrado."}), 404
+
+        atual = int(item["Quantidade"])
+        if tipo == "saida" and qtd > atual:
+            return jsonify({"erro": "Quantidade de saída maior que o estoque atual."}), 400
+
+        nova_qtd = atual + qtd if tipo == "entrada" else atual - qtd
+        cursor.execute("UPDATE estoque SET Quantidade = %s WHERE Id = %s", (nova_qtd, id_item))
+        conexao.commit()
+        cursor.close()
+        conexao.close()
+        return jsonify({"mensagem": "Estoque atualizado!"}), 200
+    except Exception as erro:
+        return jsonify({"erro": str(erro)}), 500
+
+
+@app.route("/api/usuarios", methods=["GET", "POST"])
+def api_usuarios():
+    if request.method == "GET":
+        try:
+            conexao = obter_conexao()
+            cursor = conexao.cursor(dictionary=True)
+            cursor.execute("SELECT id, username, role FROM usuarios ORDER BY id ASC")
+            usuarios = cursor.fetchall()
+            cursor.close()
+            conexao.close()
+            return jsonify(usuarios), 200
+        except Exception as erro:
+            return jsonify({"erro": str(erro)}), 500
+
+    if request.method == "POST":
+        dados = request.get_json(silent=True) or {}
+        username = dados.get("username")
+        password = dados.get("password")
+        role = dados.get("role", "user")
+
+        try:
+            senha_hash = generate_password_hash(password)
+            conexao = obter_conexao()
+            cursor = conexao.cursor()
+            cursor.execute(
+                "INSERT INTO usuarios (username, password, role) VALUES (%s, %s, %s)",
+                (username, senha_hash, role)
+            )
+            conexao.commit()
+            cursor.close()
+            conexao.close()
+            return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
+        except Exception as erro:
+            return jsonify({"erro": "Erro ao cadastrar (usuário já existe)."}), 400
+
 
 # =========================
 # INICIAR API

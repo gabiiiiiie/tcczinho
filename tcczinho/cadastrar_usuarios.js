@@ -80,6 +80,8 @@ export default function CadastrarUsuariosScreen({ navegar, nivelAcesso }) {
     })
     .catch((erro) => {
       console.error(erro);
+      const textoExibicaoRole = String(nivelUsuario).toLowerCase() === 'admin' ? 'ADMINISTRADOR' : 'USUÁRIO COMUM';
+
       Alert.alert('Erro de Conexão', 'Falha ao conectar à API do Docker para salvar.');
     });
   };
@@ -105,6 +107,13 @@ export default function CadastrarUsuariosScreen({ navegar, nivelAcesso }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity 
+  style={[styles.btnSelect, role === 'admin' && styles.btnSelectAtivo]} 
+  onPress={() => setRole('admin')}
+>
+  <Text style={[styles.txtSelect, role === 'admin' && styles.txtSelectAtivo]}>Administrador</Text>
+</TouchableOpacity>
+
       <View style={{ flex: 1, padding: 15 }}>
         <Text style={styles.titulo}>Gerenciar Usuários</Text>
 
